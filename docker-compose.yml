@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+
+  node-weather-app:
+    build: ./backend/
+    image: abdohsn/express-weather-app
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - "5000:5000"
+    links:
+      - db
+    restart: on-failure
+    depends_on:
+      - db
+
+  react-weather-app:
+    build: ./frontend/
+    image: abdohsn/react-weather-app
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "3000:3000"
+    links:
+      - node-weather-app
+    restart: on-failure
+    depends_on:
+      - node-weather-app
